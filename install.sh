@@ -1,60 +1,116 @@
-#!/bin/bash
-############################
-# .make.sh
-# This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
-############################
+echo "Bannister's dotfiles"
 
-########## Variables
 
-dir=~/dotfiles                    # dotfiles directory
-olddir=~/dotfiles_old             # old dotfiles backup directory
-files="bashrc vimrc vim zshrc oh-my-zsh tmux.conf"    # list of files/folders to symlink in homedir
+#echo "Creating an SSH key for you...\n"
+#ssh-keygen -t ed25519 -C "carskb@gmail.com"
+#echo "Copying public ssh key  file to your clipboard \n"
+#pbcopy < ~/.ssh/bannister.pub
+#echo "Please add this public key to Github \n"
+#echo "https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account \n"
 
-##########
+#read -p "Press [Enter] key after you have added the ssh key to your github account... \n"
 
-# create dotfiles_old in homedir
-echo -n "Creating $olddir for backup of any existing dotfiles in ~ ..."
-mkdir -p $olddir
-echo "done"
+
+xcode-select --install
+
+# Install if we don't have homebrew
+if test ! $(which brew); then
+  echo "Installing homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Update homebrew recipes
+echo "Updating homebrew..."
+brew update
+
+echo "Installing Git..."
+brew install git
+
+echo "Git config"
+git config --global user.name "bannister"
+git config --global user.email carskb@gmail.com
+#git config --global user.name "c-bannister"
+#git config --global user.email christian.bannister@human.com
+
+#sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+
+echo "Installing other brew stuff..."
+apps=(
+  git
+  azure-cli 
+  gh 
+  neovim 
+  iterm2 
+  macdown
+  fzf
+  z
+)
+brew install ${apps[@]}
+
+echo "Cleaning up brew"
+brew cleanup
+
+# install plugin manager for neovim
+echo "Installing vim-plug plugin manager (neovim)..."
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+
+# variables
+dir=~/dotfiles
+
+echo "Copying dotfiles from Github..."
+#cd ~
+git clone git@github.com:bannister/dotfiles.git $dir
 
 # change to the dotfiles directory
 echo -n "Changing to the $dir directory ..."
 cd $dir
-echo "done"
 
-# move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks from the homedir to any files in the ~/dotfiles directory specified in $files
-for file in $files; do
-    echo "Moving any existing dotfiles from ~ to $olddir"
-    mv ~/.$file ~/dotfiles_old/
-    echo "Creating symlink to $file in home directory."
-    ln -s $dir/$file ~/.$file
+# Install Zsh & Oh My Zsh
+echo "Installing Oh My ZSH..."
+curl -L http://install.ohmyz.sh | sh
+$(brew --prefix)/opt/fzf/install
+
+# "OMZ: Download plugins"
+git clone https://github.com/supercrabtree/k ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/k
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+
+# Apps
+cask_apps=(
+  docker
+  #google-chrome
+  iterm2
+  1password
+  spotify
+  #microsoft-teams
+  visual-studio-code
+  microsoft-office
+)
+
+# custom iterm theme (matrix)
+echo "Installing custom iTerm themes..."
+mkdir $HOME/iTermThemes
+git clone git@gist.github.com:596193b8ede69767719c.git $HOME/iTermThemes
+cd $HOME/iTermThemes
+for f in *; do
+  THEME=$(basename "$f")
+  defaults write -app iTerm 'Custom Color Presets' -dict-add "$THEME" "$(cat "$f")"
 done
+cd -
 
-install_zsh () {
-# Test to see if zshell is installed.  If it is:
-if [ -f /bin/zsh -o -f /usr/bin/zsh ]; then
-    # Clone my oh-my-zsh repository from GitHub only if it isn't already present
-    if [[ ! -d $dir/oh-my-zsh/ ]]; then
-        git clone http://github.com/robbyrussell/oh-my-zsh.git
-    fi
-    # Set the default shell to zsh if it isn't currently set to zsh
-    if [[ ! $(echo $SHELL) == $(which zsh) ]]; then
-        chsh -s $(which zsh)
-    fi
-else
-    # If zsh isn't installed, get the platform of the current machine
-    platform=$(uname);
-    # If the platform is Linux, try an apt-get to install zsh and then recurse
-    if [[ $platform == 'Linux' ]]; then
-        sudo apt-get install zsh
-        install_zsh
-    # If the platform is OS X, tell the user to install zsh :)
-    elif [[ $platform == 'Darwin' ]]; then
-        echo "Please install zsh, then re-run this script!"
-        exit
-    fi
-fi
-}
+# powerlevel10k
+echo "Installing p10k..."
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 
-install_zsh
+# Install apps to /Applications
+# Default is: /Users/$user/Applications
+echo "Installing apps with Cask..."
+# brew reinstall --cask --appdir="/Applications" ${cask_apps[@]i} 
 
+brew cleanup
+
+echo "Done!"

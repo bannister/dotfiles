@@ -1,4 +1,4 @@
-let g:python3_host_prog='/usr/local/bin/python3'
+"let g:python3_host_prog='/usr/local/bin/python3'
 "let g:python3_host_prog='/usr/local/opt/python@3.9/bin/python3.9/'
 "let g:python2_host_prog='/System/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python/'
 
@@ -8,15 +8,15 @@ call plug#begin('~/.config/nvim/plugged')
 " List of plugins.
 " Make sure you use single quotes
 " Shorthand notation
-Plug 'ncm2/ncm2'
+"Plug 'ncm2/ncm2'
 Plug 'roxma/nvim-yarp'
 Plug 'gaalcaras/ncm-R'
 Plug 'sirver/UltiSnips'
-Plug 'ncm2/ncm2-ultisnips'
+"Plug 'ncm2/ncm2-ultisnips'
 Plug 'wsdjeg/Nvim-R'
 "Plug 'jalvesaq/Nvim-R'
-Plug 'ncm2/ncm2-bufword'
-Plug 'ncm2/ncm2-path'
+"Plug 'ncm2/ncm2-bufword'
+"Plug 'ncm2/ncm2-path'
 Plug 'rizzatti/dash.vim'
 Plug 'preservim/nerdtree'
 Plug 'raimondi/delimitMate'
@@ -37,6 +37,7 @@ Plug 'junegunn/limelight.vim'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 Plug 'ellisonleao/glow.nvim'
 " Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
+"Plug 'luisiacc/thematrix'
 " Initialize plugin system
 call plug#end()
 
@@ -56,9 +57,11 @@ set laststatus=2              " To tell Vim we want to see the statusline.
 "let g:solarized_termcontrast="high"
 "let g:solarized_termcolors=256
 
-"colorscheme matrix
+colorscheme matrix
 "colorscheme darkmatrix
-"let g:airline_theme = 'biogoo'
+let g:airline_theme = 'biogoo'
+
+"colorscheme thematrix
 
 "colorscheme gruvbox
 "let g:airline_theme = 'gruvbox'
@@ -67,11 +70,11 @@ set laststatus=2              " To tell Vim we want to see the statusline.
 "let g:airline_theme = 'solarized'
 "let g:airline_solarized_bg='dark'
 
-colorscheme onedark
-let g:onedark_termcolors = 256
-let g:onedark_terminal_italics = 1
-let g:onedark_hide_endofbuffer = 1
-let g:airline_theme='onedark'
+""colorscheme onedark
+"let g:onedark_termcolors = 256
+""let g:onedark_terminal_italics = 1
+"let g:onedark_hide_endofbuffer = 1
+"let g:airline_theme='onedark'
 
 " Set a Local Leader
 
@@ -122,28 +125,27 @@ nmap <Space> <Plug>RDSendLine
 " }}}
 "
 " " R configuration - NCM2 {{{
-autocmd BufEnter * call ncm2#enable_for_buffer()    " To enable ncm2 for all buffers.
-set completeopt=noselect,noinsert,menuone,preview
+"autocmd BufEnter * call ncm2#enable_for_buffer()    " To enable ncm2 for all buffers.
+"set completeopt=noselect,noinsert,menuone,preview
 " }}}
 
-" Snips - Ultisnips - ncm2 {{{
+"" Snips - Ultisnips - ncm2 {{{
 " First use tab and shift tab to browse the popup menu and use enter to expand:
-inoremap ncm2_ultisnips#expand_or("<CR>”, 'n')
-inoremap pumvisible() ? "<C-n>" : "<Tab>"
-inoremap pumvisible() ? "<C-p>" : "<S-Tab>"
-let g:UltiSnipsExpandTrigger="<c-0>"
-au BufNewFile,BufRead *.Rmd set filetype=rmd
+"inoremap ncm2_ultisnips#expand_or("<CR>”, 'n')
+"inoremap pumvisible() ? "<C-n>" : "<Tab>"
+"inoremap pumvisible() ? "<C-p>" : "<S-Tab>"
+"let g:UltiSnipsExpandTrigger="<c-0>"
+"au BufNewFile,BufRead *.Rmd set filetype=rmd
 " c-j c-k for moving in snippet
-let g:UltiSnipsExpandTrigger		= "<Plug>(ultisnips_expand)"
-let g:UltiSnipsJumpForwardTrigger	= "<c-j>"
-let g:UltiSnipsJumpBackwardTrigger	= "<c-k>"
-let g:UltiSnipsRemoveSelectModeMappings = 0
-" }}}
+"let g:UltiSnipsExpandTrigger		= "<Plug>(ultisnips_expand)"
+"let g:UltiSnipsJumpForwardTrigger	= "<c-j>"
+"let g:UltiSnipsJumpBackwardTrigger	= "<c-k>"
+"let g:UltiSnipsRemoveSelectModeMappings = 0
+"" }}}
 
 " Dash {{{
 nmap <silent> <leader>d <Plug>DashSearch<CR>
 " }}}
- 
 
 
 
